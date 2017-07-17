@@ -1,5 +1,7 @@
 #include <mbgl/renderer/renderer.hpp>
 #include <mbgl/renderer/renderer_frontend.hpp>
+#include <mbgl/util/async_task.hpp>
+#include <mbgl/util/optional.hpp>
 
 
 /**
@@ -9,10 +11,16 @@
 class MGLRenderFrontend : public mbgl::RendererFrontend
 {
 public:
-    MGLRenderFrontend(std::unique_ptr<mbgl::Renderer> renderer_, MGLMapView* nativeView_, mbgl::View* mbglView_)
+    MGLRenderFrontend(std::unique_ptr<mbgl::Renderer> renderer_, MGLMapView* nativeView_, mbgl::View* mbglView_, bool async = false)
         : renderer(std::move(renderer_))
         , nativeView(nativeView_)
         , mbglView(mbglView_) {
+            
+        if (async) {
+            asyncInvalidate.emplace([&]() {
+                [nativeView setNeedsGLDisplay];
+            });
+        }
     }
     
     void reset() override {
@@ -23,7 +31,11 @@ public:
     
     void update(std::shared_ptr<mbgl::UpdateParameters> updateParameters_) override {
         updateParameters = std::move(updateParameters_);
-        [nativeView setNeedsGLDisplay];
+        if (asyncInvalidate) {
+            asyncInvalidate->send();
+        } else {
+            [nativeView setNeedsGLDisplay];
+        }
     }
     
     void setObserver(mbgl::RendererObserver& observer) override {
@@ -51,4 +63,5 @@ private:
     __weak MGLMapView *nativeView = nullptr;
     mbgl::View *mbglView = nullptr;
     std::shared_ptr<mbgl::UpdateParameters> updateParameters;
+    mbgl::optional<mbgl::util::AsyncTask> asyncInvalidate;
 };
