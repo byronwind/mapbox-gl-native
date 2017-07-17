@@ -651,7 +651,7 @@ public final class MapboxMap {
       @Override
       public void run() {
         transform.moveCamera(MapboxMap.this, update, callback);
-        // MapChangeDispatch.REGION_DID_CHANGE_ANIMATED is not called for `jumpTo`
+        // MapChange.REGION_DID_CHANGE_ANIMATED is not called for `jumpTo`
         // invalidate camera position to provide OnCameraChange event.
         invalidateCameraPosition();
       }
