@@ -33,31 +33,17 @@ public class MapChangeActivity extends AppCompatActivity {
       }
     });
 
-    mapView.setOnCameraRegionDidChangeAnimatedListener(new MapView.OnCameraRegionDidChangeAnimatedListener() {
+    mapView.setOnCameraDidChangeListener(new MapView.OnCameraDidChangeListener() {
       @Override
-      public void onCameraRegionDidChangeAnimated() {
-        Timber.v("OnCameraRegionDidChangeAnimated");
+      public void onCameraDidChange(boolean animated) {
+        Timber.v("OnCamaraDidChange: animated: %s", animated);
       }
     });
 
-    mapView.setOnCameraRegionDidChangeListener(new MapView.OnCameraRegionDidChangeListener() {
+    mapView.setOnCameraWillChangeListener(new MapView.OnCameraWillChangeListener() {
       @Override
-      public void onCameraRegionDidChange() {
-        Timber.v("OnCameraRegionDidChange");
-      }
-    });
-
-    mapView.setOnCameraRegionWillChangeAnimatedListener(new MapView.OnCameraRegionWillChangeAnimatedListener() {
-      @Override
-      public void onCameraRegionWillChangeAnimated() {
-        Timber.v("OnCameraRegionWilChangeAnimated");
-      }
-    });
-
-    mapView.setOnCameraRegionWillChangeListener(new MapView.OnCameraRegionWillChangeListener() {
-      @Override
-      public void onCameraRegionWillChange() {
-        Timber.v("OnCameraRegionWilChange");
+      public void onCameraWillChange(boolean animated) {
+        Timber.v("OnCameraWilChange: animated: %s", animated);
       }
     });
 
@@ -82,32 +68,17 @@ public class MapChangeActivity extends AppCompatActivity {
       }
     });
 
-    mapView.setOnDidFinishRenderingFrameFullyRenderedListener(
-      new MapView.OnDidFinishRenderingFrameFullyRenderedListener() {
-        @Override
-        public void onDidFinishRenderingFrameFullyRendered() {
-          Timber.v("OnDidFinishRenderingFramefullyRendered");
-        }
-      });
-
     mapView.setOnDidFinishRenderingFrameListener(new MapView.OnDidFinishRenderingFrameListener() {
       @Override
-      public void onDidFinishRenderingFrame() {
-        Timber.v("OnDidFinishRenderingFrame");
-      }
-    });
-
-    mapView.setOnDidFinishRenderingMapFullyRenderedListener(new MapView.OnDidFinishRenderingMapFullyRenderedListener() {
-      @Override
-      public void onDidFinishRenderingMapFullyRendered() {
-        Timber.v("OnDidFinishRenderingFrameMapFullyRendered");
+      public void onDidFinishRenderingFrame(boolean partial) {
+        Timber.v("OnDidFinishRenderingFrame: partial: %s", partial);
       }
     });
 
     mapView.setOnDidFinishRenderingMapListener(new MapView.OnDidFinishRenderingMapListener() {
       @Override
-      public void onDidFinishRenderingMap() {
-        Timber.v("OnDidFinishRenderingMap");
+      public void onDidFinishRenderingMap(boolean partial) {
+        Timber.v("OnDidFinishRenderingMap: partial: %s", partial);
       }
     });
 

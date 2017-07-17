@@ -31,7 +31,7 @@ import java.util.Map;
  * This class is responsible for managing a {@link MarkerView} item.
  * </p>
  */
-public class MarkerViewManager implements MapView.OnDidFinishRenderingFrameFullyRenderedListener {
+public class MarkerViewManager implements MapView.OnDidFinishRenderingFrameListener {
 
   private final ViewGroup markerViewContainer;
   private final ViewTreeObserver.OnPreDrawListener markerViewPreDrawObserver =
@@ -73,8 +73,8 @@ public class MarkerViewManager implements MapView.OnDidFinishRenderingFrameFully
   }
 
   @Override
-  public void onDidFinishRenderingFrameFullyRendered() {
-    if (isWaitingForRenderInvoke) {
+  public void onDidFinishRenderingFrame(boolean partial) {
+    if (!partial && isWaitingForRenderInvoke) {
       isWaitingForRenderInvoke = false;
       invalidateViewMarkersInVisibleRegion();
     }

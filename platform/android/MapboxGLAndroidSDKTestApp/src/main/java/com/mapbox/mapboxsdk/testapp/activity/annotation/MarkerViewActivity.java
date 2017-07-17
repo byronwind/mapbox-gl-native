@@ -153,9 +153,9 @@ public class MarkerViewActivity extends AppCompatActivity {
           }
         });
 
-        mapView.setOnCameraRegionDidChangeListener(new MapView.OnCameraRegionDidChangeListener() {
+        mapView.setOnCameraDidChangeListener(new MapView.OnCameraDidChangeListener() {
           @Override
-          public void onCameraRegionDidChange() {
+          public void onCameraDidChange(boolean animated) {
             updateMarkerViewCountText(markerViewManager, viewCountView, markerViewContainer);
           }
         });

@@ -24,7 +24,7 @@ import static com.mapbox.mapboxsdk.maps.MapboxMap.OnCameraMoveStartedListener;
  * {@link com.mapbox.mapboxsdk.maps.MapboxMap.OnCameraChangeListener}.
  * </p>
  */
-final class Transform implements MapView.OnCameraRegionDidChangeAnimatedListener {
+final class Transform {
 
   private final NativeMapView mapView;
   private final MarkerViewManager markerViewManager;
@@ -76,8 +76,7 @@ final class Transform implements MapView.OnCameraRegionDidChangeAnimatedListener
     markerViewManager.setTilt((float) position.tilt);
   }
 
-  @Override
-  public void onCameraRegionDidChangeAnimated() {
+  public void onCameraDidChangeAnimated() {
     if (observeAnimatedCameraChange) {
       observeAnimatedCameraChange = false;
       updateCameraPosition(invalidateCameraPosition());

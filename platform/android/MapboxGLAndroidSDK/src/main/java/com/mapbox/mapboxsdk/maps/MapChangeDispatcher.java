@@ -1,61 +1,42 @@
 package com.mapbox.mapboxsdk.maps;
 
-import com.mapbox.mapboxsdk.annotations.MarkerViewManager;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import timber.log.Timber;
 
-class MapChangeDispatch {
+class MapChangeDispatcher {
 
-  private CopyOnWriteArrayList<MapView.OnMapChangedListener> onMapChangedListeners = new CopyOnWriteArrayList<>();
-  private MapView.OnCameraRegionWillChangeListener onCameraRegionWillChangeListener;
-  private MapView.OnCameraRegionWillChangeAnimatedListener onCameraRegionWillChangeAnimatedListener;
+  // End-user callbacks
+  private MapView.OnCameraWillChangeListener onCameraWillChangeListener;
   private MapView.OnCameraIsChangingListener onCameraIsChangingListener;
-  private MapView.OnCameraRegionDidChangeListener onCameraRegionDidChangeListener;
-  private MapView.OnCameraRegionDidChangeAnimatedListener onCameraRegionDidChangeAnimatedListener;
+  private MapView.OnCameraDidChangeListener onCameraDidChangeListener;
   private MapView.OnWillStartLoadingMapListener onWillStartLoadingMapListener;
   private MapView.OnDidFinishLoadingMapListener onDidFinishLoadingMapListener;
   private MapView.OnDidFailLoadingMapListener onDidFailLoadingMapListener;
   private MapView.OnWillStartRenderingFrameListener onWillStartRenderingFrameListener;
   private MapView.OnDidFinishRenderingFrameListener onDidFinishRenderingFrameListener;
-  private MapView.OnDidFinishRenderingFrameFullyRenderedListener onDidFinishRenderingFrameFullyRenderedListener;
   private MapView.OnWillStartRenderingMapListener onWillStartRenderingMapListener;
   private MapView.OnDidFinishRenderingMapListener onDidFinishRenderingMapListener;
-  private MapView.OnDidFinishRenderingMapFullyRenderedListener onDidFinishRenderingMapFullyRenderedListener;
   private MapView.OnDidFinishLoadingStyleListener onDidFinishLoadingStyleListener;
   private MapView.OnSourceChangedListener onSourceChangedListener;
 
-  private MapView.MapCallback mapCallback;
-  private Transform transform;
-  private MarkerViewManager markerViewManager;
+  // Internal component callbacks
+  private MapView.MapChangeResultHandler mapCallback;
 
-  void bind(MapView.MapCallback mapCallback, Transform transform, MarkerViewManager markerViewManager) {
-    this.mapCallback = mapCallback;
-    this.transform = transform;
-    this.markerViewManager = markerViewManager;
-  }
+  //
+  // Setters for user defined callbacks
+  //
 
-  void setOnCameraRegionWillChangeListener(MapView.OnCameraRegionWillChangeListener onCameraRegionWillChangeListener) {
-    this.onCameraRegionWillChangeListener = onCameraRegionWillChangeListener;
-  }
-
-  void setOnCameraRegionWillChangeAnimatedListener(
-    MapView.OnCameraRegionWillChangeAnimatedListener onCameraRegionWillChangeAnimatedListener) {
-    this.onCameraRegionWillChangeAnimatedListener = onCameraRegionWillChangeAnimatedListener;
+  void setOnCameraWillChangeListener(MapView.OnCameraWillChangeListener onCameraWillChangeListener) {
+    this.onCameraWillChangeListener = onCameraWillChangeListener;
   }
 
   void setOnCameraIsChangingListener(MapView.OnCameraIsChangingListener onCameraIsChangingListener) {
     this.onCameraIsChangingListener = onCameraIsChangingListener;
   }
 
-  void setOnCameraRegionDidChangeListener(MapView.OnCameraRegionDidChangeListener onCameraRegionDidChangeListener) {
-    this.onCameraRegionDidChangeListener = onCameraRegionDidChangeListener;
-  }
-
-  void setOnCameraRegionDidChangeAnimatedListener(
-    MapView.OnCameraRegionDidChangeAnimatedListener onCameraRegionDidChangeAnimatedListener) {
-    this.onCameraRegionDidChangeAnimatedListener = onCameraRegionDidChangeAnimatedListener;
+  void setOnCameraDidChangeListener(MapView.OnCameraDidChangeListener onCameraDidChangeListener) {
+    this.onCameraDidChangeListener = onCameraDidChangeListener;
   }
 
   void setOnWillStartLoadingMapListener(MapView.OnWillStartLoadingMapListener onWillStartLoadingMapListener) {
@@ -80,22 +61,12 @@ class MapChangeDispatch {
     this.onDidFinishRenderingFrameListener = onDidFinishRenderingFrameListener;
   }
 
-  void setOnDidFinishRenderingFrameFullyRenderedListener(
-    MapView.OnDidFinishRenderingFrameFullyRenderedListener onDidFinishRenderingFrameFullyRenderedListener) {
-    this.onDidFinishRenderingFrameFullyRenderedListener = onDidFinishRenderingFrameFullyRenderedListener;
-  }
-
   void setOnWillStartRenderingMapListener(MapView.OnWillStartRenderingMapListener onWillStartRenderingMapListener) {
     this.onWillStartRenderingMapListener = onWillStartRenderingMapListener;
   }
 
   void setOnDidFinishRenderingMapListener(MapView.OnDidFinishRenderingMapListener onDidFinishRenderingMapListener) {
     this.onDidFinishRenderingMapListener = onDidFinishRenderingMapListener;
-  }
-
-  void setOnDidFinishRenderingMapFullyRenderedListener(
-    MapView.OnDidFinishRenderingMapFullyRenderedListener onDidFinishRenderingMapFullyRenderedListener) {
-    this.onDidFinishRenderingMapFullyRenderedListener = onDidFinishRenderingMapFullyRenderedListener;
   }
 
   void setOnDidFinishLoadingStyleListener(MapView.OnDidFinishLoadingStyleListener onDidFinishLoadingStyleListener) {
@@ -106,18 +77,23 @@ class MapChangeDispatch {
     this.onSourceChangedListener = onSourceChangedListener;
   }
 
-  void onCameraRegionWillChange() {
-    if (onCameraRegionWillChangeListener != null) {
-      onCameraRegionWillChangeListener.onCameraRegionWillChange();
-    }
-    onMapChange(MapView.REGION_WILL_CHANGE);
+  /*
+   * Binds the internal components to be notified about map changes.
+   */
+  void bind(MapView.MapChangeResultHandler mapCallback) {
+    this.mapCallback = mapCallback;
   }
 
-  void onCameraRegionWillChangeAnimated() {
-    if (onCameraRegionWillChangeAnimatedListener != null) {
-      onCameraRegionWillChangeAnimatedListener.onCameraRegionWillChangeAnimated();
+
+  //
+  // Map change events
+  //
+
+  void onCameraWillChange(boolean animated) {
+    if (onCameraWillChangeListener != null) {
+      onCameraWillChangeListener.onCameraWillChange(animated);
     }
-    onMapChange(MapView.REGION_WILL_CHANGE_ANIMATED);
+    onMapChange(animated ? MapView.REGION_WILL_CHANGE_ANIMATED : MapView.REGION_WILL_CHANGE);
   }
 
   void onCameraIsChanging() {
@@ -130,24 +106,14 @@ class MapChangeDispatch {
     onMapChange(MapView.REGION_IS_CHANGING);
   }
 
-  void onCameraRegionDidChange() {
-    if (onCameraRegionDidChangeListener != null) {
-      onCameraRegionDidChangeListener.onCameraRegionDidChange();
+  void onCameraDidChange(boolean animated) {
+    if (onCameraDidChangeListener != null) {
+      onCameraDidChangeListener.onCameraDidChange(animated);
     }
     if (mapCallback != null) {
-      mapCallback.onCameraRegionDidChange();
+      mapCallback.onCameraDidChange(animated);
     }
-    onMapChange(MapView.REGION_DID_CHANGE);
-  }
-
-  void onCameraRegionDidChangeAnimated() {
-    if (onCameraRegionDidChangeAnimatedListener != null) {
-      onCameraRegionDidChangeAnimatedListener.onCameraRegionDidChangeAnimated();
-    }
-    if (transform != null) {
-      transform.onCameraRegionDidChangeAnimated();
-    }
-    onMapChange(MapView.REGION_DID_CHANGE_ANIMATED);
+    onMapChange(animated ? MapView.REGION_DID_CHANGE_ANIMATED : MapView.REGION_DID_CHANGE);
   }
 
   void onWillStartLoadingMap() {
@@ -181,27 +147,14 @@ class MapChangeDispatch {
     onMapChange(MapView.WILL_START_RENDERING_FRAME);
   }
 
-  void onDidFinishRenderingFrame() {
+  void onDidFinishRenderingFrame(boolean partial) {
     if (onDidFinishRenderingFrameListener != null) {
-      onDidFinishRenderingFrameListener.onDidFinishRenderingFrame();
+      onDidFinishRenderingFrameListener.onDidFinishRenderingFrame(partial);
     }
     if (mapCallback != null) {
-      mapCallback.onDidFinishRenderingFrame();
+      mapCallback.onDidFinishRenderingFrame(partial);
     }
-    onMapChange(MapView.DID_FINISH_RENDERING_FRAME);
-  }
-
-  void onDidFinishRenderingFrameFullyRendered() {
-    if (onDidFinishRenderingFrameFullyRenderedListener != null) {
-      onDidFinishRenderingFrameFullyRenderedListener.onDidFinishRenderingFrameFullyRendered();
-    }
-    if (markerViewManager != null) {
-      markerViewManager.onDidFinishRenderingFrameFullyRendered();
-    }
-    if (mapCallback != null) {
-      mapCallback.onDidFinishRenderingFrameFullyRendered();
-    }
-    onMapChange(MapView.DID_FINISH_RENDERING_FRAME_FULLY_RENDERED);
+    onMapChange(partial ? MapView.DID_FINISH_RENDERING_FRAME : MapView.DID_FINISH_RENDERING_FRAME_FULLY_RENDERED);
   }
 
   void onWillStartRenderingMap() {
@@ -211,18 +164,11 @@ class MapChangeDispatch {
     onMapChange(MapView.WILL_START_RENDERING_MAP);
   }
 
-  void onDidFinishRenderingMap() {
+  void onDidFinishRenderingMap(boolean partial) {
     if (onDidFinishRenderingMapListener != null) {
-      onDidFinishRenderingMapListener.onDidFinishRenderingMap();
+      onDidFinishRenderingMapListener.onDidFinishRenderingMap(partial);
     }
-    onMapChange(MapView.DID_FINISH_RENDERING_MAP);
-  }
-
-  void onDidFinishRenderingMapFullyRendered() {
-    if (onDidFinishRenderingMapFullyRenderedListener != null) {
-      onDidFinishRenderingMapFullyRenderedListener.onDidFinishRenderingMapFullyRendered();
-    }
-    onMapChange(MapView.DID_FINISH_RENDERING_MAP_FULLY_RENDERED);
+    onMapChange(partial ? MapView.DID_FINISH_RENDERING_MAP :  MapView.DID_FINISH_RENDERING_MAP_FULLY_RENDERED);
   }
 
   void onDidFinishLoadingStyle() {
@@ -243,8 +189,10 @@ class MapChangeDispatch {
   }
 
   //
-  // Deprecated API
+  // Deprecated API since 5.2.0
   //
+
+  private CopyOnWriteArrayList<MapView.OnMapChangedListener> onMapChangedListeners = new CopyOnWriteArrayList<>();
 
   void onMapChange(int onMapChange) {
     if (!onMapChangedListeners.isEmpty()) {
