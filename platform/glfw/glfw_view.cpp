@@ -496,13 +496,14 @@ void GLFWView::run() {
         glfwPollEvents();
 
         if (dirty && rendererFrontend) {
+            dirty = false;
             const double started = glfwGetTime();
 
             if (animateRouteCallback)
                 animateRouteCallback(map);
 
             activate();
-            mbgl::BackendScope scope { *this, mbgl::BackendScope::ScopeType::Implicit };
+            mbgl::BackendScope guard { *this, getScopeType() };
 
             rendererFrontend->render();
 
@@ -513,7 +514,6 @@ void GLFWView::run() {
                 invalidate();
             }
 
-            dirty = false;
         }
     };
 
