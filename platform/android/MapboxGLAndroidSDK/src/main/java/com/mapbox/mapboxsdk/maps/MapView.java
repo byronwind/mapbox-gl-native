@@ -1097,8 +1097,10 @@ public class MapView extends FrameLayout {
   public interface OnDidFailLoadingMapListener {
     /**
      * Called when the map failed to load.
+     *
+     * @param errorMessage The reason why the map failed to load
      */
-    void onDidFailLoadingMap();
+    void onDidFailLoadingMap(String errorMessage);
   }
 
   /**
@@ -1200,9 +1202,11 @@ public class MapView extends FrameLayout {
    */
   public interface OnSourceChangedListener {
     /**
-     * Called when a map source as changed.
+     * Called when a map source has changed.
+     *
+     * @param id the id of the source that has changed
      */
-    void onSourceChangedListener();
+    void onSourceChangedListener(String id);
   }
 
   /**

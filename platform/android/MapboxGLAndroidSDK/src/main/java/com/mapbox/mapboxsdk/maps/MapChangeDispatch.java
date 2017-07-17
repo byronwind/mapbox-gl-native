@@ -167,9 +167,9 @@ class MapChangeDispatch {
     onMapChange(MapView.DID_FINISH_LOADING_MAP);
   }
 
-  void onDidFailLoadingMap() {
+  void onDidFailLoadingMap(String errorMessage) {
     if (onDidFailLoadingMapListener != null) {
-      onDidFailLoadingMapListener.onDidFailLoadingMap();
+      onDidFailLoadingMapListener.onDidFailLoadingMap(errorMessage);
     }
     onMapChange(MapView.DID_FAIL_LOADING_MAP);
   }
@@ -235,9 +235,9 @@ class MapChangeDispatch {
     onMapChange(MapView.DID_FINISH_LOADING_STYLE);
   }
 
-  void onSourceChanged() {
+  void onSourceChanged(String id) {
     if (onSourceChangedListener != null) {
-      onSourceChangedListener.onSourceChangedListener();
+      onSourceChangedListener.onSourceChangedListener(id);
     }
     onMapChange(MapView.SOURCE_DID_CHANGE);
   }

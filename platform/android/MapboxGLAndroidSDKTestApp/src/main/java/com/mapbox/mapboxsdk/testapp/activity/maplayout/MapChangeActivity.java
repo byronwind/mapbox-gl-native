@@ -63,8 +63,8 @@ public class MapChangeActivity extends AppCompatActivity {
 
     mapView.setOnDidFailLoadingMapListener(new MapView.OnDidFailLoadingMapListener() {
       @Override
-      public void onDidFailLoadingMap() {
-        Timber.v("OnDidFailLoadingMap");
+      public void onDidFailLoadingMap(String errorMessage) {
+        Timber.v("OnDidFailLoadingMap: %s", errorMessage);
       }
     });
 
@@ -113,8 +113,8 @@ public class MapChangeActivity extends AppCompatActivity {
 
     mapView.setOnSourceChangedListener(new MapView.OnSourceChangedListener() {
       @Override
-      public void onSourceChangedListener() {
-        Timber.v("OnSourceChangedListener");
+      public void onSourceChangedListener(String sourceId) {
+        Timber.v("OnSourceChangedListener: source with id: %s", sourceId);
       }
     });
 

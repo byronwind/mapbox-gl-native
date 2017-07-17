@@ -143,9 +143,10 @@ public class MapChangeDispatchTest {
 
   @Test
   public void testOnDidFailLoadingMapListener() throws Exception {
+    String errorMessage =  "fail";
     mapChangeDispatch.setOnDidFailLoadingMapListener(onDidFailLoadingMapListener);
-    mapChangeDispatch.onDidFailLoadingMap();
-    verify(onDidFailLoadingMapListener).onDidFailLoadingMap();
+    mapChangeDispatch.onDidFailLoadingMap(errorMessage);
+    verify(onDidFailLoadingMapListener).onDidFailLoadingMap(errorMessage);
     verify(onMapChangedListener).onMapChanged(MapView.DID_FAIL_LOADING_MAP);
   }
 
@@ -211,9 +212,10 @@ public class MapChangeDispatchTest {
 
   @Test
   public void testOnSourceChangedListener() throws Exception {
+    String sourceId = "sourceId";
     mapChangeDispatch.setOnSourceChangedListener(onSourceChangedListener);
-    mapChangeDispatch.onSourceChanged();
-    verify(onSourceChangedListener).onSourceChangedListener();
+    mapChangeDispatch.onSourceChanged(sourceId);
+    verify(onSourceChangedListener).onSourceChangedListener(sourceId);
     verify(onMapChangedListener).onMapChanged(MapView.SOURCE_DID_CHANGE);
   }
 }

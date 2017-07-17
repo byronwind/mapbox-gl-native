@@ -913,8 +913,8 @@ final class NativeMapView {
     mapChangeDispatch.onDidFinishLoadingMap();
   }
 
-  protected void onDidFailLoadingMap() {
-    mapChangeDispatch.onDidFailLoadingMap();
+  protected void onDidFailLoadingMap(String erorMessage) {
+    mapChangeDispatch.onDidFailLoadingMap(erorMessage);
   }
 
   protected void onWillStartRenderingFrame() {
@@ -945,8 +945,8 @@ final class NativeMapView {
     mapChangeDispatch.onDidFinishLoadingStyle();
   }
 
-  protected void onSourceChanged() {
-    mapChangeDispatch.onSourceChanged();
+  protected void onSourceChanged(String id) {
+    mapChangeDispatch.onSourceChanged(id);
   }
 
   protected void onFpsChanged(double fps) {

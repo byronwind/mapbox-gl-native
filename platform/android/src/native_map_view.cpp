@@ -246,11 +246,16 @@ void NativeMapView::onDidFinishLoadingMap() {
  *
  * May be called from any thread
  */
-void NativeMapView::onDidFailLoadingMap(std::exception_ptr) {
+void NativeMapView::onDidFailLoadingMap(std::exception_ptr eptr) {
     assert(vm != nullptr);
-    android::UniqueEnv _env = android::AttachEnv();
-    static auto onDidFailLoadingMap = javaClass.GetMethod<void ()>(*_env, "onDidFailLoadingMap");
-    javaPeer->Call(*_env, onDidFailLoadingMap);
+    try {
+        std::rethrow_exception(eptr);
+    } catch (const std::exception& e) {
+        std::string errorMessage =  e.what();
+        android::UniqueEnv _env = android::AttachEnv();
+        static auto onDidFailLoadingMap = javaClass.GetMethod<void (jni::String)>(*_env, "onDidFailLoadingMap");
+        javaPeer->Call(*_env, onDidFailLoadingMap, jni::Make<jni::String>(*_env, errorMessage));
+    }
 }
 
 
@@ -331,12 +336,12 @@ void NativeMapView::onDidFinishLoadingStyle() {
  *
  * May be called from any thread
  */
-void NativeMapView::onSourceChanged(mbgl::style::Source&) {
+void NativeMapView::onSourceChanged(mbgl::style::Source& source) {
     assert(vm != nullptr);
     android::UniqueEnv _env = android::AttachEnv();
     //TODO add Params
-    static auto onSourceChanged = javaClass.GetMethod<void ()>(*_env, "onSourceChanged");
-    javaPeer->Call(*_env, onSourceChanged);
+    static auto onSourceChanged = javaClass.GetMethod<void (jni::String)>(*_env, "onSourceChanged");
+    javaPeer->Call(*_env, onSourceChanged, jni::Make<jni::String>(*_env, source.getID()) );
 }
 
 // JNI Methods //
